@@ -1,0 +1,930 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#0b2b4a">
+  <title>Klimate Komfort — смета и заявка</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    /* ============ БАЗА ============ */
+    * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Segoe UI', Roboto, system-ui, -apple-system, sans-serif;
+      background: #f0f7fe;
+      color: #1a2b4c;
+      line-height: 1.5;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+    img { max-width: 100%; display: block; }
+    button, input, textarea { font-family: inherit; }
+    :root {
+      --blue-deep: #0b2b4a;
+      --blue-bright: #1f7fcf;
+      --blue-light: #d6e9ff;
+      --blue-pale: #eef6fe;
+      --white: #ffffff;
+      --gray-light: #f8fcff;
+      --radius-mobile: 20px;
+    }
+    .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+
+    /* ============ АНИМАЦИИ ============ */
+    .fade-up { opacity: 0; transform: translateY(30px); transition: opacity 0.8s ease, transform 0.8s ease; }
+    .fade-up.visible { opacity: 1; transform: translateY(0); }
+
+    /* ============ ШАПКА ============ */
+    .header {
+      background: rgba(255,255,255,0.94);
+      box-shadow: 0 4px 12px rgba(0,30,60,0.06);
+      padding: 16px 0;
+      border-bottom: 2px solid var(--blue-light);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+    .header-grid {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .logo h1 { font-size: 1.7rem; font-weight: 600; letter-spacing: -0.5px; color: var(--blue-deep); }
+    .logo span { color: var(--blue-bright); font-weight: 300; }
+    .logo .tagline {
+      font-size: 0.85rem;
+      color: #3e5f7e;
+      margin-top: 4px;
+      border-left: 3px solid var(--blue-bright);
+      padding-left: 10px;
+    }
+    .contact-phone {
+      background: var(--blue-pale);
+      padding: 10px 20px;
+      border-radius: 60px;
+      border: 1px solid var(--blue-light);
+      font-weight: 600;
+      color: var(--blue-deep);
+      font-size: 1rem;
+      cursor: pointer;
+      transition: 0.2s;
+      white-space: nowrap;
+    }
+    .contact-phone:hover { background: var(--blue-light); transform: translateY(-1px); }
+    .contact-phone i { color: var(--blue-bright); margin-right: 8px; }
+
+    /* ============ ГЕРОЙ ============ */
+    .hero { background: linear-gradient(145deg, #ffffff 0%, #e5f2fe 100%); padding: 50px 0 45px; border-bottom: 1px solid rgba(31,127,207,0.15); }
+    .hero-flex { display: flex; flex-wrap: wrap; align-items: center; gap: 40px; }
+    .hero-text { flex: 1 1 320px; min-width: 0; }
+    .hero-text h2 { font-size: 2.5rem; font-weight: 700; color: var(--blue-deep); line-height: 1.15; margin-bottom: 18px; }
+    .hero-text h2 i { color: var(--blue-bright); }
+    .hero-text .highlight { color: var(--blue-bright); border-bottom: 3px solid var(--blue-light); display: inline-block; }
+    .hero-text p.lead { font-size: 1.15rem; color: #1f4a72; margin-bottom: 8px; }
+    .hero-features { display: flex; flex-wrap: wrap; gap: 15px 25px; margin: 22px 0 28px; font-size: 1rem; list-style: none; }
+    .hero-features li { display: flex; align-items: center; gap: 10px; }
+    .hero-features i { color: var(--blue-bright); font-size: 1.25rem; width: 26px; text-align: center; flex-shrink: 0; }
+    .btn-group { display: flex; flex-wrap: wrap; gap: 14px; align-items: center; }
+
+    /* ============ КНОПКИ ============ */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      background: var(--white);
+      border: 2px solid var(--blue-bright);
+      color: var(--blue-bright);
+      padding: 14px 30px;
+      border-radius: 60px;
+      font-weight: 600;
+      font-size: 1rem;
+      text-decoration: none;
+      transition: all 0.25s ease;
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(31,127,207,0.1);
+      text-align: center;
+      line-height: 1.2;
+    }
+    .btn-primary {
+      background: var(--blue-bright);
+      color: white;
+      box-shadow: 0 8px 16px rgba(31,127,207,0.25);
+    }
+    .btn-primary:hover { background: #1a6bb3; border-color: #1a6bb3; transform: translateY(-2px); box-shadow: 0 12px 24px rgba(31,127,207,0.35); }
+    .btn-outline:hover { background: var(--blue-pale); transform: translateY(-1px); }
+    .btn:active { transform: scale(0.97); }
+
+    /* ============ ГЕРОЙ-КАРТИНКА ============ */
+    .hero-image {
+      flex: 1 1 280px;
+      text-align: center;
+      background: rgba(255,255,255,0.5);
+      backdrop-filter: blur(2px);
+      border-radius: 60px 60px 60px 10px;
+      padding: 25px 15px;
+      box-shadow: 0 12px 30px rgba(0,40,80,0.08);
+      border: 1px solid white;
+      animation: float 4s ease-in-out infinite;
+    }
+    @keyframes float { 0% { transform: translateY(0); } 50% { transform: translateY(-8px); } 100% { transform: translateY(0); } }
+    .hero-image i.house { font-size: 6rem; color: var(--blue-bright); opacity: 0.85; }
+    .hero-image p { margin-top: 12px; font-weight: 500; color: var(--blue-deep); background: white; padding: 6px 14px; border-radius: 40px; display: inline-block; font-size: 0.95rem; }
+    .hero-icons { margin-top: 12px; display: flex; justify-content: center; gap: 14px; font-size: 1.6rem; color: var(--blue-bright); }
+
+    /* ============ СЕКЦИИ ============ */
+    .section-title { text-align: center; font-size: 2.1rem; font-weight: 600; color: var(--blue-deep); margin-bottom: 15px; line-height: 1.2; }
+    .section-sub { text-align: center; color: #2c4a6a; max-width: 650px; margin: 0 auto 40px; font-size: 1.05rem; border-bottom: 3px solid var(--blue-light); padding-bottom: 16px; }
+
+    /* ============ УСЛУГИ ============ */
+    .services { padding: 60px 0 55px; background: var(--white); }
+    .service-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 25px; }
+    .service-card {
+      background: var(--gray-light);
+      padding: 30px 22px;
+      border-radius: 36px 12px 36px 12px;
+      border: 1px solid rgba(31,127,207,0.2);
+      transition: all 0.3s cubic-bezier(0.2,0.9,0.4,1);
+      text-align: center;
+      box-shadow: 0 4px 8px rgba(0,20,40,0.02);
+    }
+    .service-card:hover { background: white; border-color: var(--blue-bright); box-shadow: 0 16px 32px rgba(31,127,207,0.15); transform: translateY(-8px) scale(1.01); }
+    .service-card i { font-size: 2.6rem; color: var(--blue-bright); background: var(--blue-pale); padding: 18px; border-radius: 60px; margin-bottom: 18px; display: inline-block; transition: 0.3s; }
+    .service-card:hover i { transform: rotate(4deg) scale(1.06); background: var(--blue-light); }
+    .service-card h3 { font-size: 1.35rem; margin-bottom: 10px; color: var(--blue-deep); }
+    .service-card p { color: #2d4b6b; font-size: 0.95rem; }
+
+    /* ============ БЕСПЛАТНЫЙ ВЫЕЗД ============ */
+    .free-block { background: var(--blue-pale); padding: 55px 0; border-top: 2px solid white; border-bottom: 2px solid white; }
+    .free-card {
+      background: white;
+      border-radius: 60px 20px 60px 20px;
+      padding: 35px 35px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 25px;
+      box-shadow: 0 12px 32px rgba(0,40,80,0.06);
+      border: 1px solid rgba(31,127,207,0.2);
+      transition: 0.3s;
+    }
+    .free-card:hover { box-shadow: 0 20px 40px rgba(31,127,207,0.12); }
+    .free-icon {
+      flex: 0 0 80px;
+      font-size: 3rem;
+      color: var(--blue-bright);
+      background: var(--blue-light);
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: pulse 2s infinite;
+      flex-shrink: 0;
+    }
+    @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(31,127,207,0.3); } 70% { box-shadow: 0 0 0 14px rgba(31,127,207,0); } 100% { box-shadow: 0 0 0 0 rgba(31,127,207,0); } }
+    .free-text { flex: 2 1 280px; min-width: 0; }
+    .free-text h3 { font-size: 1.6rem; color: var(--blue-deep); margin-bottom: 8px; line-height: 1.2; }
+    .free-text h3 i { color: var(--blue-bright); margin-right: 10px; }
+    .free-text p { font-size: 1.02rem; color: #2d4b6b; }
+    .free-text .highlight-badge {
+      background: var(--blue-deep);
+      color: white;
+      padding: 5px 14px;
+      border-radius: 40px;
+      font-size: 0.82rem;
+      display: inline-block;
+      margin-top: 10px;
+      margin-right: 6px;
+      font-weight: 500;
+    }
+    .free-btn { margin-left: auto; flex-shrink: 0; text-align: center; }
+
+    /* ============ ПРЕИМУЩЕСТВА ============ */
+    .advantages { background: white; padding: 55px 0; }
+    .adv-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 22px; }
+    .adv-item {
+      text-align: center;
+      background: var(--gray-light);
+      border-radius: 40px 8px 40px 8px;
+      padding: 25px 18px;
+      border: 1px solid var(--blue-light);
+      transition: 0.3s;
+    }
+    .adv-item:hover { transform: translateY(-6px) scale(1.02); border-color: var(--blue-bright); box-shadow: 0 12px 24px rgba(0,0,0,0.04); }
+    .adv-item i { font-size: 2.2rem; color: var(--blue-bright); margin-bottom: 14px; }
+    .adv-item h4 { font-size: 1.15rem; color: var(--blue-deep); margin-bottom: 4px; }
+    .adv-item p { color: #2f4d6e; font-size: 0.92rem; }
+
+    /* ============ СМЕТА ============ */
+    .estimate-section { background: var(--white); padding: 45px 0 55px; }
+    .estimate-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; }
+    .estimate-table-wrap {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      background: var(--gray-light);
+      border-radius: 28px 12px 28px 12px;
+      border: 1px solid var(--blue-light);
+      padding: 8px 0;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.02);
+    }
+    .estimate-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; min-width: 520px; }
+    .estimate-table th { background: var(--blue-deep); color: white; padding: 12px 10px; text-align: left; font-weight: 500; font-size: 0.88rem; }
+    .estimate-table td { padding: 10px 10px; border-bottom: 1px solid rgba(0,0,0,0.04); vertical-align: top; }
+    .estimate-table .num { text-align: center; color: #3e5f7e; width: 38px; }
+    .estimate-note {
+      margin-top: 18px;
+      background: var(--blue-pale);
+      padding: 14px 20px;
+      border-radius: 40px;
+      display: inline-block;
+      border-left: 6px solid var(--blue-bright);
+      font-weight: 500;
+      font-size: 0.95rem;
+    }
+    .estimate-wrapper {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.8s cubic-bezier(0.2, 0.9, 0.4, 1), opacity 0.6s ease, margin 0.4s ease;
+      opacity: 0;
+      margin: 0;
+    }
+    .estimate-wrapper.open { max-height: 6000px; opacity: 1; margin: 25px 0 0; }
+    .estimate-toggle-btn { margin-top: 0; }
+    .estimate-toggle-btn .btn { min-width: 200px; }
+    .estimate-cta { margin-top: 30px; text-align: center; }
+
+    /* ============ ФУТЕР ============ */
+    .footer { background: var(--blue-deep); color: #d0e2f5; padding: 40px 0 25px; }
+    .footer-grid { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 28px; }
+    .footer-col { flex: 1 1 220px; }
+    .footer-col h4 { color: white; font-size: 1.2rem; margin-bottom: 14px; font-weight: 400; }
+    .footer-col p { margin-bottom: 8px; font-size: 0.95rem; word-break: break-word; }
+    .footer-col i { color: var(--blue-bright); width: 24px; }
+    .footer .copy { text-align: center; border-top: 1px solid #1f4370; padding-top: 22px; margin-top: 28px; font-size: 0.85rem; color: #98b9dd; }
+    .footer .badge-free { background: #1f7fcf; color: white; padding: 6px 14px; border-radius: 60px; font-size: 0.82rem; font-weight: 500; display: inline-block; margin-top: 4px; }
+
+    /* ============ МОДАЛЬНОЕ ОКНО ============ */
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,20,40,0.65);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      z-index: 1000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      animation: fadeIn 0.3s ease;
+      overflow-y: auto;
+    }
+    .modal-overlay.active { display: flex; }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    .modal {
+      background: white;
+      border-radius: 48px 16px 48px 16px;
+      max-width: 520px;
+      width: 100%;
+      padding: 40px 35px;
+      box-shadow: 0 40px 80px rgba(0,0,0,0.3);
+      position: relative;
+      border: 1px solid var(--blue-light);
+      animation: slideUp 0.35s cubic-bezier(0.2,0.9,0.4,1);
+      max-height: 95vh;
+      overflow-y: auto;
+    }
+    @keyframes slideUp { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: translateY(0); } }
+    .modal-close {
+      position: absolute;
+      top: 14px; right: 18px;
+      font-size: 2rem;
+      color: #8aa3bc;
+      cursor: pointer;
+      transition: 0.2s;
+      background: none;
+      border: none;
+      line-height: 1;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+    }
+    .modal-close:hover { color: var(--blue-deep); background: var(--blue-pale); transform: rotate(90deg); }
+    .modal h2 { font-size: 1.6rem; color: var(--blue-deep); margin-bottom: 8px; line-height: 1.2; padding-right: 40px; }
+    .modal p.sub { color: #3e5f7e; margin-bottom: 22px; font-size: 0.92rem; }
+    .modal label { font-weight: 600; color: var(--blue-deep); display: block; margin-top: 16px; margin-bottom: 6px; font-size: 0.9rem; }
+    .modal input, .modal textarea {
+      width: 100%;
+      padding: 14px 18px;
+      border: 2px solid #dce6f0;
+      border-radius: 40px;
+      font-size: 16px; /* 16px важно! иначе iOS зумит при фокусе */
+      transition: 0.2s;
+      background: #f8fcff;
+      font-family: inherit;
+    }
+    .modal input:focus, .modal textarea:focus {
+      outline: none;
+      border-color: var(--blue-bright);
+      box-shadow: 0 0 0 4px rgba(31,127,207,0.15);
+      background: white;
+    }
+    .modal textarea { resize: vertical; min-height: 80px; border-radius: 24px; }
+    .modal .btn-submit {
+      width: 100%;
+      margin-top: 22px;
+      padding: 16px;
+      font-size: 1.05rem;
+      background: var(--blue-bright);
+      color: white;
+      border: none;
+      border-radius: 60px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: 0.25s;
+      box-shadow: 0 8px 20px rgba(31,127,207,0.25);
+      font-family: inherit;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+    .modal .btn-submit:hover:not(:disabled) { background: #1a6bb3; transform: translateY(-2px); box-shadow: 0 12px 28px rgba(31,127,207,0.35); }
+    .modal .btn-submit:active { transform: scale(0.97); }
+    .modal .btn-submit:disabled { opacity: 0.7; cursor: not-allowed; }
+    .modal .agreement { font-size: 0.75rem; color: #6a859e; margin-top: 14px; text-align: center; }
+
+    /* ============ ТОСТ ============ */
+    .toast {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: #0b2b4a;
+      color: white;
+      padding: 14px 26px;
+      border-radius: 60px;
+      font-weight: 500;
+      box-shadow: 0 12px 32px rgba(0,0,0,0.25);
+      z-index: 1100;
+      opacity: 0;
+      transition: all 0.5s cubic-bezier(0.2,0.9,0.4,1);
+      pointer-events: none;
+      border-left: 6px solid var(--blue-bright);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 0.95rem;
+      max-width: 90vw;
+      text-align: left;
+    }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); pointer-events: auto; }
+    .toast i { color: #5fb0ff; font-size: 1.25rem; flex-shrink: 0; }
+
+    /* ============ ПЛАВАЮЩАЯ КНОПКА ============ */
+    .floating-badge {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: white;
+      border-radius: 60px;
+      padding: 10px 18px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+      border: 1px solid var(--blue-light);
+      font-size: 0.85rem;
+      color: var(--blue-deep);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      z-index: 99;
+      font-weight: 500;
+      animation: pulse 2s infinite;
+    }
+    .floating-badge i { color: var(--blue-bright); }
+
+    /* ============ ПЛАНШЕТЫ (до 900px) ============ */
+    @media (max-width: 900px) {
+      .hero-text h2 { font-size: 2.1rem; }
+      .section-title { font-size: 1.8rem; }
+      .free-card { padding: 28px 25px; }
+      .free-text h3 { font-size: 1.4rem; }
+    }
+
+    /* ============ ТЕЛЕФОНЫ (до 700px) ============ */
+    @media (max-width: 700px) {
+      .container { padding: 0 16px; }
+
+      /* --- Шапка --- */
+      .header { padding: 12px 0; }
+      .header-grid { flex-direction: column; gap: 10px; }
+      .logo { text-align: center; width: 100%; }
+      .logo h1 { font-size: 1.5rem; }
+      .logo .tagline { font-size: 0.78rem; border-left: none; padding-left: 0; }
+      .contact-phone {
+        width: 100%;
+        text-align: center;
+        font-size: 1.05rem;
+        padding: 12px 20px;
+        justify-content: center;
+        display: flex;
+        align-items: center;
+      }
+
+      /* --- Герой --- */
+      .hero { padding: 35px 0 35px; }
+      .hero-flex { gap: 25px; }
+      .hero-text h2 { font-size: 1.85rem; margin-bottom: 14px; }
+      .hero-text h2 i { font-size: 1.5rem !important; }
+      .hero-text p.lead { font-size: 1rem; }
+      .hero-features { flex-direction: column; gap: 12px; margin: 20px 0 24px; font-size: 0.95rem; }
+      .hero-image { padding: 20px 15px; border-radius: 40px 40px 40px 10px; }
+      .hero-image i.house { font-size: 4.5rem; }
+
+      /* --- Кнопки на всю ширину --- */
+      .btn-group { flex-direction: column; width: 100%; gap: 10px; }
+      .btn-group .btn { width: 100%; padding: 15px 20px; font-size: 0.98rem; }
+
+      /* --- Секции --- */
+      .services { padding: 45px 0 40px; }
+      .section-title { font-size: 1.6rem; margin-bottom: 12px; }
+      .section-sub { font-size: 0.95rem; margin-bottom: 30px; padding-bottom: 14px; }
+      .service-grid { grid-template-columns: 1fr; gap: 18px; }
+      .service-card { padding: 25px 20px; border-radius: 28px 10px 28px 10px; }
+      .service-card i { font-size: 2.2rem; padding: 15px; margin-bottom: 14px; }
+
+      /* --- Бесплатный выезд --- */
+      .free-block { padding: 40px 0; }
+      .free-card {
+        flex-direction: column;
+        text-align: center;
+        padding: 28px 22px;
+        border-radius: 40px 16px 40px 16px;
+        gap: 20px;
+      }
+      .free-icon { margin: 0 auto; width: 70px; height: 70px; font-size: 2.5rem; }
+      .free-text h3 { font-size: 1.3rem; }
+      .free-text p { font-size: 0.95rem; }
+      .free-text .highlight-badge { font-size: 0.78rem; padding: 5px 12px; }
+      .free-btn { margin: 0 auto; width: 100%; }
+      .free-btn .btn { width: 100%; padding: 15px 20px; }
+
+      /* --- Преимущества --- */
+      .advantages { padding: 40px 0; }
+      .adv-grid { grid-template-columns: 1fr 1fr; gap: 14px; }
+      .adv-item { padding: 20px 12px; border-radius: 28px 8px 28px 8px; }
+      .adv-item i { font-size: 1.9rem; margin-bottom: 10px; }
+      .adv-item h4 { font-size: 1rem; }
+      .adv-item p { font-size: 0.82rem; }
+
+      /* --- Смета --- */
+      .estimate-section { padding: 40px 0 45px; }
+      .estimate-header { flex-direction: column; align-items: stretch; }
+      .estimate-header .section-title { text-align: center; font-size: 1.5rem !important; }
+      .estimate-toggle-btn { width: 100%; margin-top: 5px; }
+      .estimate-toggle-btn .btn { width: 100%; min-width: auto; }
+      .estimate-table-wrap { border-radius: 20px 10px 20px 10px; }
+      .estimate-table { font-size: 0.82rem; min-width: 480px; }
+      .estimate-table th { padding: 10px 8px; font-size: 0.8rem; }
+      .estimate-table td { padding: 9px 8px; }
+      .estimate-note { font-size: 0.85rem; padding: 12px 16px; border-radius: 30px; }
+      .estimate-cta { margin-top: 25px; }
+      .estimate-cta .btn { width: 100%; padding: 15px 20px; font-size: 1rem; }
+
+      /* --- Футер --- */
+      .footer { padding: 35px 0 20px; }
+      .footer-grid { flex-direction: column; gap: 22px; text-align: center; }
+      .footer-col h4 { font-size: 1.1rem; margin-bottom: 10px; }
+      .footer-col p { font-size: 0.9rem; }
+      .footer .copy { font-size: 0.78rem; padding-top: 18px; margin-top: 22px; }
+
+      /* --- Модалка — на весь экран снизу --- */
+      .modal-overlay { padding: 0; align-items: flex-end; }
+      .modal {
+        border-radius: 28px 28px 0 0;
+        max-width: 100%;
+        width: 100%;
+        padding: 30px 22px calc(30px + env(safe-area-inset-bottom, 0px));
+        max-height: 92vh;
+        animation: slideUpMobile 0.35s cubic-bezier(0.2,0.9,0.4,1);
+      }
+      @keyframes slideUpMobile { from { transform: translateY(100%); } to { transform: translateY(0); } }
+      .modal h2 { font-size: 1.35rem; }
+      .modal p.sub { font-size: 0.88rem; margin-bottom: 18px; }
+      .modal-close { top: 12px; right: 14px; font-size: 1.8rem; width: 36px; height: 36px; }
+
+      /* --- Тост снизу --- */
+      .toast {
+        bottom: 16px;
+        left: 16px;
+        right: 16px;
+        transform: translateY(100px);
+        max-width: none;
+        font-size: 0.9rem;
+        padding: 13px 18px;
+      }
+      .toast.show { transform: translateY(0); }
+
+      /* --- Плавающая кнопка --- */
+      .floating-badge {
+        left: 16px;
+        right: 16px;
+        bottom: 16px;
+        justify-content: center;
+        font-size: 0.85rem;
+        padding: 12px 16px;
+      }
+    }
+
+    /* ============ ОЧЕНЬ УЗКИЕ (до 380px) ============ */
+    @media (max-width: 380px) {
+      .logo h1 { font-size: 1.3rem; }
+      .hero-text h2 { font-size: 1.6rem; }
+      .adv-grid { grid-template-columns: 1fr; }
+      .section-title { font-size: 1.4rem; }
+      .modal { padding: 24px 18px calc(24px + env(safe-area-inset-bottom, 0px)); }
+      .modal h2 { font-size: 1.2rem; }
+    }
+
+    /* ============ БОЛЬШИЕ ЭКРАНЫ ============ */
+    @media (min-width: 1400px) {
+      .container { max-width: 1280px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ТОСТ -->
+<div id="toast" class="toast"><i class="fas fa-check-circle"></i> <span id="toastMessage">Готово!</span></div>
+
+<!-- МОДАЛЬНОЕ ОКНО -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <button class="modal-close" id="modalCloseBtn" type="button">&times;</button>
+    <h2><i class="fas fa-tools" style="color: var(--blue-bright); margin-right: 10px;"></i>Бесплатный замер</h2>
+    <p class="sub">Заполните форму — наш мастер приедет в удобное время, сделает замер и смету бесплатно.</p>
+
+    <form id="orderForm">
+      <input type="hidden" name="access_key" value="bd498e49-f59c-4d86-8d09-8b948a187a15">
+      <input type="hidden" name="subject" value="🔥 Новая заявка с сайта Klimate Komfort">
+      <input type="hidden" name="from_name" value="Сайт Klimate Komfort">
+      <input type="checkbox" name="botcheck" style="display:none !important;" tabindex="-1" autocomplete="off">
+
+      <label for="name">Ваше имя</label>
+      <input type="text" id="name" name="name" placeholder="Иван Петров" required maxlength="100">
+
+      <label for="phone">Телефон</label>
+      <input type="tel" id="phone" name="phone" placeholder="8 (928) 096-66-47" required maxlength="30">
+
+      <label for="address">Адрес объекта</label>
+      <input type="text" id="address" name="address" placeholder="ул. Ленина, 12, кв. 5" maxlength="200">
+
+      <label for="comment">Комментарий (опционально)</label>
+      <textarea id="comment" name="comment" placeholder="Удобное время для замера, особые пожелания..." maxlength="2000"></textarea>
+
+      <button type="submit" class="btn-submit"><i class="fas fa-paper-plane"></i> Отправить заявку</button>
+      <p class="agreement"><i class="fas fa-lock" style="color: #2ecc71;"></i> Ваши данные защищены. Никакого спама.</p>
+    </form>
+  </div>
+</div>
+
+<!-- ШАПКА -->
+<header class="header">
+  <div class="container header-grid">
+    <div class="logo">
+      <h1>Klimate <span>Komfort</span></h1>
+      <div class="tagline"><i class="fas fa-home" style="color: var(--blue-bright); margin-right: 6px;"></i> Отопление · Канализация · Электрика</div>
+    </div>
+    <div class="contact-phone" id="callButton">
+      <i class="fas fa-phone-alt"></i> 8 (928) 096-66-47
+    </div>
+  </div>
+</header>
+
+<!-- ГЕРОЙ -->
+<section class="hero">
+  <div class="container hero-flex">
+    <div class="hero-text fade-up">
+      <h2><i class="fas fa-bolt" style="font-size: 1.8rem;"></i> Дом <span class="highlight">под ключ</span></h2>
+      <p class="lead">Отопление, канализация, электрика — <br> <strong>все в одном месте</strong></p>
+      <ul class="hero-features">
+        <li><i class="fas fa-tools"></i> Бесплатный выезд мастера на замер</li>
+        <li><i class="fas fa-calculator"></i> Бесплатный подсчёт и смета</li>
+        <li><i class="fas fa-check-circle"></i> Работаем с 2012 года</li>
+      </ul>
+      <div class="btn-group">
+        <button class="btn btn-primary open-modal-btn"><i class="fas fa-clipboard-list"></i> Вызвать мастера бесплатно</button>
+        <button class="btn btn-outline" id="smetaToggleBtn"><i class="fas fa-file-invoice"></i> Показать пример сметы</button>
+      </div>
+      <p style="margin-top: 18px; background: var(--blue-light); display: inline-block; padding: 6px 16px; border-radius: 40px; color: #0b2b4a; font-size: 0.9rem;">
+        <i class="fas fa-star" style="color: #f7b731;"></i>  Более 470 довольных объектов
+      </p>
+    </div>
+    <div class="hero-image fade-up">
+      <i class="fas fa-house-chimney house"></i>
+      <p><i class="fas fa-arrow-right" style="color: var(--blue-bright);"></i>  Комфорт с нами</p>
+      <div class="hero-icons">
+        <i class="fas fa-fire"></i><i class="fas fa-toilet"></i><i class="fas fa-plug"></i>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- УСЛУГИ -->
+<section class="services">
+  <div class="container">
+    <h2 class="section-title fade-up"><i class="fas fa-cogs" style="color: var(--blue-bright); margin-right: 10px;"></i>Наши направления</h2>
+    <div class="section-sub fade-up">Комплексное оснащение инженерных систем — от проекта до ввода в эксплуатацию</div>
+    <div class="service-grid">
+      <div class="service-card fade-up"><i class="fas fa-fire"></i><h3>Отопление</h3><p>Котлы, радиаторы, тёплый пол, котельные. Монтаж и обслуживание.</p></div>
+      <div class="service-card fade-up"><i class="fas fa-toilet"></i><h3>Канализация</h3><p>Внутренняя и наружная канализация, септики, очистные сооружения.</p></div>
+      <div class="service-card fade-up"><i class="fas fa-bolt"></i><h3>Электрика</h3><p>Щиты, проводка, слаботочка, автоматика, заземление, освещение.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- БЕСПЛАТНЫЙ ВЫЕЗД -->
+<section class="free-block">
+  <div class="container">
+    <div class="free-card fade-up">
+      <div class="free-icon"><i class="fas fa-tape"></i></div>
+      <div class="free-text">
+        <h3><i class="fas fa-hand-holding-heart"></i> Бесплатный выезд + смета</h3>
+        <p>Наш мастер приедет в удобное время, выполнит замер, сделает <strong>точный подсчёт</strong> и составит <strong>смету абсолютно бесплатно</strong>.</p>
+        <div style="margin-top: 6px;">
+          <span class="highlight-badge"><i class="fas fa-check"></i>  Без скрытых платежей</span>
+          <span class="highlight-badge" style="background: #1f7fcf;"><i class="fas fa-file-pdf"></i>  Смета в день замера</span>
+        </div>
+      </div>
+      <div class="free-btn">
+        <button class="btn btn-primary open-modal-btn"><i class="fas fa-calendar-check"></i> Записать замер</button>
+        <p style="font-size: 0.8rem; margin-top: 8px; color: #2c5a7a;"><i class="fas fa-mobile-alt"></i>  Звонок за 15 минут</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- СМЕТА -->
+<section class="estimate-section">
+  <div class="container">
+    <div class="estimate-header">
+      <h2 class="section-title" style="margin-bottom: 0; text-align: left; font-size: 1.8rem;">
+        <i class="fas fa-file-invoice" style="color: var(--blue-bright); margin-right: 10px;"></i>Пример сметы
+      </h2>
+      <button class="btn btn-outline estimate-toggle-btn" id="smetaToggleBtn2">
+        <i class="fas fa-chevron-down" id="smetaChevron"></i> <span id="smetaToggleText">Показать смету</span>
+      </button>
+    </div>
+    <div class="section-sub" style="margin-top: 10px; margin-bottom: 0;">Счёт № 1287 от 19.05.2026 — перечень работ и материалов</div>
+    <div class="estimate-wrapper" id="estimateWrapper">
+      <div class="estimate-table-wrap">
+        <table class="estimate-table">
+          <thead>
+            <tr><th>№</th><th>Товары (работы, услуги)</th><th>Кол-во</th><th>Ед.</th></tr>
+          </thead>
+          <tbody>
+            <tr><td class="num">1</td><td>Американка 25х1" с внутр. резьбой Kalde (Турция)</td><td>1</td><td>шт</td></tr>
+            <tr><td class="num">2</td><td>Американка 25х1" с наруж. резьбой Kalde (Турция)</td><td>1</td><td>шт</td></tr>
+            <tr><td class="num">3</td><td>Воздухоотводчик автоматический вертикальный 1/2" VALTEC</td><td>2</td><td>шт</td></tr>
+            <tr><td class="num">4</td><td>Газовый котел ARIDEYA КС-Г 25 кВт</td><td>1</td><td>шт</td></tr>
+            <tr><td class="num">5</td><td>Евроконус для коллектора, 16мм.</td><td>14</td><td>шт</td></tr>
+            <tr><td class="num">6</td><td>Заглушка дымохода 130мм.</td><td>1</td><td>шт</td></tr>
+            <tr><td class="num">7</td><td>Заглушка полипропиленовая с нар. резьб. VALTEC комплект</td><td>2</td><td>(пара)</td></tr>
+            <tr><td class="num">8</td><td>Зонт дымохода ветрозащитный нерж. 130мм.</td><td>1</td><td>шт</td></tr>
+            <tr><td class="num">9</td><td>Коллекторная группа с расходомерами 7 выходов ViEiR</td><td>1</td><td>шт</td></tr>
+            <tr><td class="num">10</td><td>Контрагайка стальная 50 мм.</td><td>2</td><td>шт</td></tr>
+            <tr><td class="num">11</td><td>Контрагайка чугун D20 (3/4")</td><td>20</td><td>шт</td></tr>
+            <tr><td class="num">12</td><td>Кран Газовый шаровый в/н бабочка 3/4" Vieir</td><td>2</td><td>шт</td></tr>
+            <tr><td class="num">13</td><td>Кран шаровый прямой с полусгоном и термометром 1" Vieir</td><td>2</td><td>шт</td></tr>
+            <tr><td class="num">14</td><td>Крепление дымода 130мм</td><td>1</td><td>шт</td></tr>
+            <tr><td class="num">15</td><td>Металлопластиковая труба VALTEC PEX-AL-PEX 16Х2,0 ММ</td><td>534</td><td>м</td></tr>
+            <tr><td class="num">16</td><td>Монтажные работы</td><td>1</td><td>кв.м</td></tr>
+            <tr><td class="num">17</td><td>Муфта 1" вн/вн</td><td>1</td><td>шт</td></tr>
+            <tr><td class="num">18</td><td>Муфта стальная 50 мм.</td><td>2</td><td>шт</td></tr>
+            <tr><td class="num">19</td><td>Набор для радиаторной батареии 1/2</td><td>10</td><td>шт</td></tr>
+            <tr><td class="num">20</td><td>Насос циркуляц. Флянц. SHIMGE 40/10</td><td>1</td><td>шт</td></tr>
+            <tr><td class="num">21</td><td>Насос циркуляционный 25/4 VALTEC</td><td>1</td><td>шт</td></tr>
+            <tr><td class="num">22</td><td>Насосно-смесительный узел для теплого пола</td><td>1</td><td>шт</td></tr>
+            <tr><td class="num">23</td><td>Отвод 90гр. дымохода нерж. 130мм</td><td>1</td><td>шт</td></tr>
+            <tr><td class="num">24</td><td>Отвод стальн с резьбой 3/4 (пистолет)</td><td>20</td><td>шт</td></tr>
+            <tr><td class="num">25</td><td>Отвод стальн. под сварку ДУ-40 1-1/2</td><td>16</td><td>шт</td></tr>
+            <tr><td class="num">26</td><td>Пена монтажная</td><td>1</td><td>шт</td></tr>
+            <tr><td class="num">27</td><td>Планка для смесителя d20 1/2 Kalde</td><td>1</td><td>шт</td></tr>
+            <tr><td class="num">28</td><td>Полусгон стальной 40 мм</td><td>2</td><td>шт</td></tr>
+            <tr><td class="num">29</td><td>Полусгон стальной 50 мм</td><td>2</td><td>шт</td></tr>
+            <tr><td class="num">30</td><td>ПП труба d32 стекловолокно Kalde</td><td>8</td><td>м</td></tr>
+            <tr><td class="num">31</td><td>ПП труба d32 стекловолокно Kalde</td><td>8</td><td>м</td></tr>
+            <tr><td class="num">32</td><td>Радиатор "ТЕПЛО МИР" 500/100 1 секция</td><td>1</td><td>шт</td></tr>
+            <tr><td class="num">33</td><td>Расширительный бак 30 л.</td><td>1</td><td>шт</td></tr>
+            <tr><td class="num">34</td><td>Скоба d25 Kalde</td><td>8</td><td>шт</td></tr>
+            <tr><td class="num">35</td><td>Теплоизоляция для теплого пола Алюбабл с разметкой</td><td>92</td><td>кв.м</td></tr>
+            <tr><td class="num">36</td><td>Тройник d25 Kalde</td><td>10</td><td>шт</td></tr>
+            <tr><td class="num">37</td><td>Тройник дымохода нерж. 130мм.</td><td>1</td><td>шт</td></tr>
+            <tr><td class="num">38</td><td>Тройник перех. d25*20*25 Kalde</td><td>20</td><td>шт</td></tr>
+            <tr><td class="num">39</td><td>Труба дымоходная нерж. 130мм./1м.</td><td>5</td><td>шт</td></tr>
+            <tr><td class="num">40</td><td>Труба металическая D20</td><td>2</td><td>м</td></tr>
+            <tr><td class="num">41</td><td>Труба металическая D40</td><td>56</td><td>м</td></tr>
+            <tr><td class="num">42</td><td>Угол комбинированный с внутр. резьбой 20*1/2</td><td>3</td><td>шт</td></tr>
+            <tr><td class="num">43</td><td>Хомут нейлоновый 20см.</td><td>8</td><td>шт</td></tr>
+            <tr><td class="num">44</td><td>Шкаф распределительный встроенный ШРВ-3</td><td>1</td><td>шт</td></tr>
+            <tr><td class="num">45</td><td>Штырь (крепеж)</td><td>30</td><td>шт</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="estimate-note">
+        <i class="fas fa-rouble" style="color: var(--blue-bright); margin-right: 8px;"></i>
+        <strong>Всего наименований 45</strong>.
+      </div>
+    </div>
+    <div class="estimate-cta">
+      <button class="btn btn-primary open-modal-btn">
+        <i class="fas fa-calculator"></i> Рассчитать смету на ваш объект
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- ПРЕИМУЩЕСТВА -->
+<section class="advantages">
+  <div class="container">
+    <h2 class="section-title fade-up">Почему Klimate Komfort</h2>
+    <div class="adv-grid">
+      <div class="adv-item fade-up"><i class="fas fa-user-shield"></i><h4>Гарантия 3 года</h4><p>На все виды работ и оборудование</p></div>
+      <div class="adv-item fade-up"><i class="fas fa-clock"></i><h4>Соблюдение сроков</h4><p>Чёткое планирование и контроль</p></div>
+      <div class="adv-item fade-up"><i class="fas fa-file-signature"></i><h4>Прозрачная смета</h4><p>Детализация до последнего самореза</p></div>
+      <div class="adv-item fade-up"><i class="fas fa-people-arrows"></i><h4>Свой штат мастеров</h4><p>Без субподрядчиков, стабильное качество</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ФУТЕР -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-col">
+        <h4><i class="fas fa-phone-alt" style="color: var(--blue-bright);"></i> Контакты</h4>
+        <p><i class="fas fa-phone"></i> 8 (928) 096-66-47</p>
+        <p><i class="fas fa-envelope"></i> KlimateKomfort@gmail.com</p>
+        <p><i class="fas fa-map-pin"></i> Карабулак, ул. Ордженикидзе, 34</p>
+      </div>
+      <div class="footer-col">
+        <h4><i class="fas fa-clock" style="color: var(--blue-bright);"></i> Режим работы</h4>
+        <p>Пн–Чт: 8:00 – 17:00</p>
+        <p>Сб–Вс: 08:00 – 17:00</p>
+        <p><span class="badge-free"><i class="fas fa-truck"></i> Выезд в день заявки</span></p>
+      </div>
+      <div class="footer-col">
+        <h4><i class="fas fa-shield-alt" style="color: var(--blue-bright);"></i> Бесплатно</h4>
+        <p><i class="fas fa-check-circle" style="color: #2ecc71;"></i> Выезд мастера на замер</p>
+        <p><i class="fas fa-check-circle" style="color: #2ecc71;"></i> Составление сметы</p>
+        <p><i class="fas fa-check-circle" style="color: #2ecc71;"></i> Подсчёт материалов</p>
+      </div>
+    </div>
+    <div class="copy"><i class="fas fa-copyright"></i> 2026 Klimate Komfort — отопление, канализация, электрика под ключ. Все права защищены.</div>
+  </div>
+</footer>
+
+<!-- ПЛАВАЮЩАЯ КНОПКА -->
+<div class="floating-badge">
+  <i class="fas fa-hand-holding-usd"></i> Смета за 0 ₽
+</div>
+
+<script>
+  (function() {
+    // ===== ТОСТ =====
+    const toast = document.getElementById('toast');
+    const toastMsg = document.getElementById('toastMessage');
+    let toastTimeout;
+    function showToast(msg, icon = 'fa-check-circle') {
+      toastMsg.textContent = msg;
+      toast.querySelector('i').className = 'fas ' + icon;
+      toast.classList.add('show');
+      clearTimeout(toastTimeout);
+      toastTimeout = setTimeout(() => toast.classList.remove('show'), 4000);
+    }
+
+    // ===== МОДАЛЬНОЕ ОКНО =====
+    const overlay = document.getElementById('modalOverlay');
+    const closeBtn = document.getElementById('modalCloseBtn');
+    const form = document.getElementById('orderForm');
+
+    function openModal() {
+      overlay.classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+    function closeModal() {
+      overlay.classList.remove('active');
+      document.body.style.overflow = '';
+    }
+
+    document.querySelectorAll('.open-modal-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        openModal();
+      });
+    });
+    closeBtn.addEventListener('click', closeModal);
+    overlay.addEventListener('click', (e) => {
+      if (e.target === overlay) closeModal();
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeModal();
+    });
+
+    // ===== ОТПРАВКА ФОРМЫ ЧЕРЕЗ WEB3FORMS =====
+    form.addEventListener('submit', async function(e) {
+      e.preventDefault();
+
+      const name  = document.getElementById('name').value.trim();
+      const phone = document.getElementById('phone').value.trim();
+
+      if (!name || !phone) {
+        showToast('⚠️ Заполните имя и телефон', 'fa-exclamation-circle');
+        return;
+      }
+
+      const submitBtn = form.querySelector('.btn-submit');
+      const originalHTML = submitBtn.innerHTML;
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Отправляем...';
+
+      try {
+        const formData = new FormData(form);
+        const res = await fetch('https://api.web3forms.com/submit', {
+          method: 'POST',
+          body: formData
+        });
+
+        const data = await res.json();
+
+        if (data.success) {
+          showToast('✅ Заявка отправлена! Мастер перезвонит в течение 15 минут.', 'fa-check-circle');
+          form.reset();
+          setTimeout(() => closeModal(), 1200);
+        } else {
+          throw new Error(data.message || 'Ошибка отправки');
+        }
+      } catch (err) {
+        showToast('❌ ' + (err.message || 'Позвоните: 8 (928) 096-66-47'), 'fa-exclamation-circle');
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = originalHTML;
+      }
+    });
+
+    // ===== УПРАВЛЕНИЕ СМЕТОЙ =====
+    const wrapper = document.getElementById('estimateWrapper');
+    const toggleBtn1 = document.getElementById('smetaToggleBtn');
+    const toggleBtn2 = document.getElementById('smetaToggleBtn2');
+    const chevron = document.getElementById('smetaChevron');
+    const toggleText = document.getElementById('smetaToggleText');
+
+    function toggleEstimate(e) {
+      e.preventDefault();
+      const isOpen = wrapper.classList.contains('open');
+      if (isOpen) {
+        wrapper.classList.remove('open');
+        chevron.className = 'fas fa-chevron-down';
+        toggleText.textContent = 'Показать смету';
+      } else {
+        wrapper.classList.add('open');
+        chevron.className = 'fas fa-chevron-up';
+        toggleText.textContent = 'Скрыть смету';
+        setTimeout(() => {
+          document.querySelector('.estimate-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 100);
+      }
+    }
+    toggleBtn1.addEventListener('click', toggleEstimate);
+    toggleBtn2.addEventListener('click', toggleEstimate);
+
+    // ===== ТЕЛЕФОН В ШАПКЕ =====
+    document.getElementById('callButton').addEventListener('click', () => {
+      showToast('📱 Набираем номер 8 (928) 096-66-47 ...', 'fa-phone');
+    });
+
+    // ===== АНИМАЦИЯ ПРИ СКРОЛЛЕ =====
+    const fadeElements = document.querySelectorAll('.fade-up');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) entry.target.classList.add('visible');
+      });
+    }, { threshold: 0.15 });
+    fadeElements.forEach(el => observer.observe(el));
+
+    // ===== ПРИВЕТСТВЕННЫЙ ТОСТ =====
+    setTimeout(() => {
+      showToast('👋 Здравствуйте! Нажмите "Показать смету" для просмотра примера.', 'fa-hand-peace');
+    }, 800);
+  })();
+</script>
+</body>
+</html>
